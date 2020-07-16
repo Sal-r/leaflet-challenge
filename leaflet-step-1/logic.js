@@ -9,6 +9,31 @@ d3.json(queryUrl, function(data) {
 
 function createFeatures(earthquakeData) {
 
+  function styleInfo(feature){
+    return{
+      opacity: 0.3,
+      fillOpacity: .8,
+      fillColor:getColor(feature.properties.mag),
+      radius: feature.properties.mag * 8
+    };
+  }
+  function getColor(magnitude){
+    switch(true) {
+      case magnitude>5:
+        return "#FF0000";
+      case magnitude>4:
+        return "#ff6600";
+      case magnitude>3:
+        return "#FFCC00";
+      case magnitude>2:
+        return "#ccff00";
+      case magnitude>1:
+        return "#66ff00";
+      default:
+        return "#00FF00";
+    }
+  }
+
   // Define a function we want to run once for each feature in the features array
   // Give each feature a popup describing the place and time of the earthquake
   function onEachFeature(feature, layer) {
@@ -19,10 +44,35 @@ function createFeatures(earthquakeData) {
   // Create a GeoJSON layer containing the features array on the earthquakeData object
   // Run the onEachFeature function once for each piece of data in the array
   var earthquakes = L.geoJSON(earthquakeData, {
+    pointToLayer: function(feature,latlng){
+      return L.circleMarker(latlng)
+    },
+    style : styleInfo,
     onEachFeature: onEachFeature
   });
 
+
+//having an issue with the legend
+// var legend = L.control({position: "bottomright"});
+
+// legend.onAdd = function(){
+//   var div = L.DomUtil.create("div", "info legend");
+//   var grades = [1,2,3,4,5];
+//   var colors = ["#00FF00", "#66ff00", "#ccff00", "#FFCC00", "#ff6600", "#FF0000"]
+//   for (var i=0;i< grades.length;i++){
+//     div.innerHTML +=
+//       "<i style='background: " +colors[i] + "'></i>" +
+//       grades[i] +(grades[i+1] ? "&ndash;" + grades[i+1] +"<br>":"+");
+//   }
+// return div;
+// };
+// legend.addTo(myMap);
+
+
   // Sending our earthquakes layer to the createMap function
+
+
+  
   createMap(earthquakes);
 }
 
